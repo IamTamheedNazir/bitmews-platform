@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\TokenController;
 use App\Http\Controllers\Api\PostController;
+use App\Http\Controllers\Api\ChatbotController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,6 +36,12 @@ Route::prefix('v1')->group(function () {
     Route::get('/posts', [PostController::class, 'index']);
     Route::get('/posts/{id}', [PostController::class, 'show']);
     
+    // Chatbot (Public - guest access)
+    Route::post('/chatbot/conversation', [ChatbotController::class, 'createConversation']);
+    Route::post('/chatbot/message', [ChatbotController::class, 'sendMessage']);
+    Route::get('/chatbot/conversation/{sessionId}', [ChatbotController::class, 'getConversation']);
+    Route::get('/chatbot/suggestions', [ChatbotController::class, 'getSuggestions']);
+    
 });
 
 // Protected routes
@@ -56,6 +63,11 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::delete('/posts/{id}/bookmark', [PostController::class, 'unbookmark']);
     Route::get('/posts/bookmarked/me', [PostController::class, 'bookmarked']);
     
+    // Chatbot (Protected)
+    Route::get('/chatbot/conversations', [ChatbotController::class, 'getUserConversations']);
+    Route::delete('/chatbot/conversation/{sessionId}', [ChatbotController::class, 'deleteConversation']);
+    Route::post('/chatbot/message/{messageId}/rate', [ChatbotController::class, 'rateMessage']);
+    
 });
 
 // Health check
@@ -64,5 +76,11 @@ Route::get('/health', function () {
         'status' => 'ok',
         'timestamp' => now()->toIso8601String(),
         'version' => '1.0.0',
+        'features' => [
+            'authentication' => true,
+            'tokens' => true,
+            'community' => true,
+            'chatbot' => true,
+        ],
     ]);
 });
