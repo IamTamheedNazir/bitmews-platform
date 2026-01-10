@@ -143,11 +143,11 @@
 
                 <!-- Feature 6 -->
                 <div class="bg-gray-900 p-8 rounded-xl border border-gray-800 hover:border-primary transition">
-                    <div class="text-4xl mb-4">🔐</div>
-                    <h3 class="text-2xl font-bold mb-4">Secure & Reliable</h3>
+                    <div class="text-4xl mb-4">💬</div>
+                    <h3 class="text-2xl font-bold mb-4">AI Chatbot Assistant</h3>
                     <p class="text-gray-400">
-                        Enterprise-grade security with multiple payment gateways, 
-                        2FA authentication, and encrypted data storage.
+                        Get instant answers about crypto prices, market trends, and trading tips 
+                        from our AI-powered chatbot. Available 24/7!
                     </p>
                 </div>
             </div>
@@ -187,7 +187,7 @@
                         <li class="flex items-center"><span class="text-primary mr-2">✓</span> Basic news access</li>
                         <li class="flex items-center"><span class="text-primary mr-2">✓</span> Limited token data</li>
                         <li class="flex items-center"><span class="text-primary mr-2">✓</span> 100 API calls/day</li>
-                        <li class="flex items-center"><span class="text-primary mr-2">✓</span> Community access</li>
+                        <li class="flex items-center"><span class="text-primary mr-2">✓</span> AI Chatbot (10 msgs/day)</li>
                     </ul>
                     <a href="/register" class="block text-center bg-gray-800 px-6 py-3 rounded-lg hover:bg-gray-700 transition">
                         Get Started
@@ -202,7 +202,7 @@
                         <li class="flex items-center"><span class="text-primary mr-2">✓</span> Full news access</li>
                         <li class="flex items-center"><span class="text-primary mr-2">✓</span> Real-time token data</li>
                         <li class="flex items-center"><span class="text-primary mr-2">✓</span> 1,000 API calls/day</li>
-                        <li class="flex items-center"><span class="text-primary mr-2">✓</span> AI-powered insights</li>
+                        <li class="flex items-center"><span class="text-primary mr-2">✓</span> AI Chatbot (100 msgs/day)</li>
                     </ul>
                     <a href="/register" class="block text-center bg-gray-800 px-6 py-3 rounded-lg hover:bg-gray-700 transition">
                         Get Started
@@ -218,7 +218,7 @@
                         <li class="flex items-center"><span class="mr-2">✓</span> Everything in Basic</li>
                         <li class="flex items-center"><span class="mr-2">✓</span> 10,000 API calls/day</li>
                         <li class="flex items-center"><span class="mr-2">✓</span> Advanced analytics</li>
-                        <li class="flex items-center"><span class="mr-2">✓</span> Write-to-Earn</li>
+                        <li class="flex items-center"><span class="mr-2">✓</span> AI Chatbot (1000 msgs/day)</li>
                     </ul>
                     <a href="/register" class="block text-center bg-dark text-white px-6 py-3 rounded-lg hover:bg-gray-900 transition">
                         Get Started
@@ -233,7 +233,7 @@
                         <li class="flex items-center"><span class="text-primary mr-2">✓</span> Everything in Pro</li>
                         <li class="flex items-center"><span class="text-primary mr-2">✓</span> Unlimited API calls</li>
                         <li class="flex items-center"><span class="text-primary mr-2">✓</span> White-label API</li>
-                        <li class="flex items-center"><span class="text-primary mr-2">✓</span> Priority support</li>
+                        <li class="flex items-center"><span class="text-primary mr-2">✓</span> AI Chatbot (Unlimited)</li>
                     </ul>
                     <a href="/register" class="block text-center bg-gray-800 px-6 py-3 rounded-lg hover:bg-gray-700 transition">
                         Get Started
@@ -298,6 +298,9 @@
             </div>
         </div>
     </footer>
+
+    <!-- Include Floating Chatbot Widget -->
+    @include('components.chatbot-widget')
 
     <script>
         // Load trending tokens
