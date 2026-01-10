@@ -13,6 +13,11 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// AI Chatbot page
+Route::get('/chatbot', function () {
+    return view('chatbot');
+});
+
 // Admin panel routes (handled by Filament)
 // Access at: /admin
 
