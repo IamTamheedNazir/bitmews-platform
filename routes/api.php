@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\TokenController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\ChatbotController;
+use App\Http\Controllers\Api\StorageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -68,6 +69,17 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::delete('/chatbot/conversation/{sessionId}', [ChatbotController::class, 'deleteConversation']);
     Route::post('/chatbot/message/{messageId}/rate', [ChatbotController::class, 'rateMessage']);
     
+    // Cloud Storage (Protected)
+    Route::post('/storage/upload', [StorageController::class, 'upload']);
+    Route::post('/storage/upload-multiple', [StorageController::class, 'uploadMultiple']);
+    Route::post('/storage/upload-url', [StorageController::class, 'uploadFromUrl']);
+    Route::post('/storage/upload-base64', [StorageController::class, 'uploadBase64']);
+    Route::delete('/storage/delete', [StorageController::class, 'delete']);
+    Route::post('/storage/url', [StorageController::class, 'getUrl']);
+    Route::get('/storage/files', [StorageController::class, 'listFiles']);
+    Route::get('/storage/stats', [StorageController::class, 'getStats']);
+    Route::get('/storage/test', [StorageController::class, 'testConnection']);
+    
 });
 
 // Health check
@@ -81,6 +93,7 @@ Route::get('/health', function () {
             'tokens' => true,
             'community' => true,
             'chatbot' => true,
+            'cloud_storage' => true,
         ],
     ]);
 });
