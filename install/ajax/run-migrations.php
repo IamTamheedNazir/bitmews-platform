@@ -15,14 +15,37 @@ try {
     
     $laravelRoot = null;
     foreach ($possibleRoots as $root) {
-        if (file_exists($root . '/artisan') && file_exists($root . '/vendor/autoload.php')) {
+        if (file_exists($root . '/artisan')) {
             $laravelRoot = $root;
             break;
         }
     }
     
     if (!$laravelRoot) {
-        throw new Exception('Cannot find Laravel root directory. Make sure vendor folder exists (run: composer install)');
+        throw new Exception('Cannot find Laravel root directory (artisan file not found)');
+    }
+    
+    // Check if vendor folder exists
+    if (!file_exists($laravelRoot . '/vendor/autoload.php')) {
+        $errorMsg = "CRITICAL ERROR: vendor folder is missing!\n\n";
+        $errorMsg .= "The vendor folder contains all Laravel dependencies and is REQUIRED.\n\n";
+        $errorMsg .= "HOW TO FIX:\n\n";
+        $errorMsg .= "Option 1 - Via Terminal/SSH:\n";
+        $errorMsg .= "  cd " . $laravelRoot . "\n";
+        $errorMsg .= "  composer install --no-dev --optimize-autoloader\n\n";
+        $errorMsg .= "Option 2 - Via cPanel Terminal:\n";
+        $errorMsg .= "  1. Open cPanel Terminal\n";
+        $errorMsg .= "  2. Run: cd public_html\n";
+        $errorMsg .= "  3. Run: composer install --no-dev\n\n";
+        $errorMsg .= "Option 3 - Upload vendor folder:\n";
+        $errorMsg .= "  1. On your computer: composer install\n";
+        $errorMsg .= "  2. Upload vendor folder via FTP\n";
+        $errorMsg .= "  3. Place in: " . $laravelRoot . "/vendor\n\n";
+        $errorMsg .= "Option 4 - Use install script:\n";
+        $errorMsg .= "  bash " . $laravelRoot . "/install-dependencies.sh\n\n";
+        $errorMsg .= "After installing vendor folder, refresh this page to continue.";
+        
+        throw new Exception($errorMsg);
     }
     
     // Change to Laravel root directory
@@ -33,28 +56,24 @@ try {
         throw new Exception('.env file not found. Please complete previous steps first.');
     }
     
-    // Check if vendor folder exists
-    if (!file_exists($laravelRoot . '/vendor/autoload.php')) {
-        throw new Exception('Composer dependencies not installed. Please run: composer install');
-    }
-    
     // Check if migrations folder exists
     if (!file_exists($laravelRoot . '/database/migrations')) {
         throw new Exception('Migrations folder not found at: ' . $laravelRoot . '/database/migrations');
     }
     
-    // Run migrations
+    // Try to run migrations
     $output = [];
     $returnCode = 0;
     
     // Try different PHP executables
-    $phpExecutables = ['php', '/usr/bin/php', '/usr/local/bin/php', 'php8.1', 'php8.0', 'php8.2'];
+    $phpExecutables = ['php', '/usr/bin/php', '/usr/local/bin/php', 'php8.2', 'php8.1', 'php8.0'];
     $migrationSuccess = false;
     $lastError = '';
     
     foreach ($phpExecutables as $php) {
         $output = [];
-        exec("$php artisan migrate --force 2>&1", $output, $returnCode);
+        $command = "$php artisan migrate --force 2>&1";
+        exec($command, $output, $returnCode);
         
         if ($returnCode === 0) {
             $migrationSuccess = true;
@@ -62,19 +81,29 @@ try {
         }
         
         $lastError = implode("\n", $output);
+        
+        // If error mentions vendor/autoload, break early
+        if (strpos($lastError, 'vendor/autoload') !== false) {
+            break;
+        }
     }
     
     if (!$migrationSuccess) {
-        // Try to get more detailed error
+        // Parse error for better message
         $detailedError = $lastError;
+        
+        // Check for vendor/autoload error
+        if (strpos($detailedError, 'vendor/autoload') !== false) {
+            throw new Exception("vendor folder is missing or incomplete. Run: composer install --no-dev --optimize-autoloader");
+        }
         
         // Check if it's a database connection issue
         if (strpos($detailedError, 'Access denied') !== false) {
-            throw new Exception('Database connection failed. Please check your database credentials in previous step.');
+            throw new Exception('Database connection failed. Check your database credentials.');
         }
         
         if (strpos($detailedError, 'Unknown database') !== false) {
-            throw new Exception('Database does not exist. Please create the database first in cPanel.');
+            throw new Exception('Database does not exist. Create the database in cPanel first.');
         }
         
         if (strpos($detailedError, 'SQLSTATE') !== false) {
@@ -92,9 +121,10 @@ try {
     ]);
     
 } catch (Exception $e) {
+    http_response_code(500);
     echo json_encode([
         'success' => false,
         'message' => $e->getMessage(),
-        'help' => 'Check: 1) Database exists, 2) Credentials correct, 3) vendor folder exists (composer install)',
+        'help' => 'Most common issue: vendor folder missing. Run: composer install --no-dev --optimize-autoloader',
     ]);
 }
